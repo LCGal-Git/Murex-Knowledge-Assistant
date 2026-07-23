@@ -1,0 +1,22 @@
+MUREX CONFIGURATION NOTE - CROSS-CURRENCY SWAP CONFIRMATION NOTIONAL MISMATCH
+
+Issue observed (2025-05-30): An outgoing confirmation for a
+cross-currency swap trade with counterparty EUROTRADE_SA showed a
+notional amount on the far leg that did not match what the trader had
+input at execution, triggering a confirmation dispute from the
+counterparty.
+
+Root cause: A FX fixing rate used to calculate the far leg notional
+from the near leg notional was pulled from the wrong fixing source
+(an internal estimate rate instead of the officially agreed fixing
+source specified in the trade's confirmation template).
+
+Resolution: Corrected the fixing source reference under Front Office >
+Product Configuration > Cross-Currency Swap > Fixing Source Mapping.
+Cancelled and rebooked the trade with the correct fixing source, and
+reissued the confirmation, which matched the counterparty's expectation.
+
+Preventive note: Fixing source configuration should be validated
+against the legal confirmation template for each product type,
+particularly for cross-currency products where a fixing feeds directly
+into a settlement amount.

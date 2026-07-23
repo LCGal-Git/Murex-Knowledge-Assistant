@@ -1,0 +1,22 @@
+MUREX CONFIGURATION NOTE - END-OF-DAY ACCOUNTING BATCH FAILURE
+
+Issue observed (2025-06-15): The end-of-day accounting simulation batch
+for entity BANK_MX_01 failed partway through processing, leaving
+roughly 200 trades without generated accounting entries for the day,
+delaying the morning P&L report.
+
+Root cause: A single trade in the batch had a null value in the
+settlement date field due to a manual booking error, and the batch job
+was not configured to skip and log individual failures - a single bad
+trade halted the entire batch.
+
+Resolution: Corrected the settlement date on the affected trade,
+re-ran the accounting simulation batch overnight, and it completed
+successfully for all 200 trades. Submitted a change request to
+reconfigure the batch job to log and skip individual trade failures
+rather than halting entirely.
+
+Preventive note: Critical end-of-day batch jobs should be configured
+with failure isolation (skip-and-log) rather than all-or-nothing
+processing, so one bad trade doesn't block an entire day's accounting
+output.

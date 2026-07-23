@@ -1,0 +1,21 @@
+MUREX CONFIGURATION NOTE - MT940 STATEMENT RECONCILIATION BREAK
+
+Issue observed (2025-04-05): Daily nostro reconciliation for the EUR
+account at CUSTODIAN_BANK showed three unmatched entries after the
+MT940 statement import, even though the underlying trades had settled
+correctly according to Back Office.
+
+Root cause: The MT940 parser was misreading a non-standard reference
+format used by CUSTODIAN_BANK in field 86, causing the matching engine
+to treat those three entries as unrecognized rather than linking them
+to existing settlement records.
+
+Resolution: Added a custom parsing rule under Back Office >
+Reconciliation > Statement Formats to correctly extract the reference
+number from CUSTODIAN_BANK's field 86 format. Reprocessed the
+statement and all three entries matched automatically.
+
+Preventive note: When onboarding a new custodian or nostro
+correspondent, request a sample MT940 statement in advance to verify
+field 86 reference formatting before go-live, rather than discovering
+mismatches in production.

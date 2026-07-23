@@ -1,0 +1,20 @@
+MUREX CONFIGURATION NOTE - USER UNABLE TO APPROVE TRADES IN WORKFLOW
+
+Issue observed (2025-04-20): A newly onboarded middle office analyst
+reported being unable to approve trades pending in their queue, with
+the approval button greyed out despite having been granted "Middle
+Office Analyst" role in the user administration module.
+
+Root cause: The role had been assigned correctly, but the user's
+profile was missing an entity-level entitlement for BANK_MX_01, so
+even though the role itself allowed approvals, the user had no
+permission scope over trades booked under that specific entity.
+
+Resolution: Added the missing entity entitlement under User
+Administration > Entitlements > Entity Scope for the affected user.
+Approval functionality worked immediately after entitlement was added,
+without needing to log out or restart the session.
+
+Preventive note: When onboarding new users, both the functional role
+AND the entity-level entitlement need to be checked - granting a role
+alone does not guarantee access if entity scope is missing.

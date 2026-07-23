@@ -1,0 +1,21 @@
+MUREX CONFIGURATION NOTE - PRE-TRADE CREDIT LIMIT BREACH
+
+Issue observed (2025-01-22): Traders on the FX desk were unable to book
+new forward trades with counterparty GLOBALBANK_LTD, receiving a hard
+block from the pre-trade credit control module despite the counterparty
+having available credit headroom according to Risk.
+
+Root cause: The credit limit utilization calculation was including two
+already-matured trades that had not been properly rolled off the
+exposure calculation due to a batch job that failed silently the
+previous night.
+
+Resolution: Manually triggered a recalculation of credit utilization
+under Risk > Pre-Deal Checks > Recalculate Exposure, which correctly
+excluded the matured trades. Investigated the failed batch job and
+found a lock conflict with a concurrent end-of-day process.
+
+Preventive note: Pre-trade credit blocks that seem inconsistent with
+Risk's own view of exposure should prompt a check of the most recent
+exposure recalculation batch before assuming a limit is genuinely
+exhausted.

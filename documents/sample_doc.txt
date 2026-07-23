@@ -1,0 +1,18 @@
+MUREX CONFIGURATION NOTE - FX FORWARD ACCOUNTING FLOW
+
+Issue observed (2024-11-03): FX forward trades booked through the front
+office were not flowing to the accounting ledger for entity BANK_MX_01.
+
+Root cause: The accounting simulation model for FX forwards was missing
+a mapping to the correct general ledger account group for this entity.
+This mapping exists by default for entity BANK_MX_00 but was not copied
+over during the entity setup for BANK_MX_01.
+
+Resolution: Added the missing GL account group mapping under
+Datamart > Accounting > Simulation Models > FX Forward, replicating the
+configuration used for BANK_MX_00. Trades booked after the fix flowed
+correctly to accounting within the next end-of-day batch.
+
+Preventive note: When onboarding a new legal entity, always verify that
+accounting simulation model mappings are copied from a reference entity,
+not just static data and workflow rules.

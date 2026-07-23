@@ -1,0 +1,21 @@
+MUREX CONFIGURATION NOTE - STALE FX MARKET DATA FEED
+
+Issue observed (2025-05-12): FX spot rates displayed in the trading
+blotter for USD/MXN were not updating in real time, showing rates
+roughly 40 minutes old, which caused several trades to be booked at
+off-market rates before the issue was noticed.
+
+Root cause: The market data feed connection to the primary data vendor
+had silently disconnected due to an expired authentication certificate,
+but Murex continued displaying the last successfully received rate
+without visibly flagging it as stale.
+
+Resolution: Renewed the market data vendor's authentication certificate
+and restarted the market data gateway service. Added a monitoring alert
+under Market Data > Feed Monitoring to flag any feed with no update for
+longer than 2 minutes during trading hours.
+
+Preventive note: Certificate expiry dates for market data vendor
+connections should be tracked proactively, since a silent disconnection
+is far more dangerous than an obvious error - traders may not notice
+rates have stopped moving.

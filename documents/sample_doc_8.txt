@@ -1,0 +1,20 @@
+MUREX CONFIGURATION NOTE - BOND COUPON CORPORATE ACTION MISCALCULATION
+
+Issue observed (2025-03-28): A coupon payment corporate action
+processed for a fixed-rate bond position resulted in an incorrect
+cash amount being generated, roughly half of the expected payment.
+
+Root cause: The bond's static data had the coupon frequency incorrectly
+set to "Annual" when the actual instrument paid semi-annually. The
+corporate action engine calculated the coupon correctly based on the
+configured frequency, but the underlying static data was wrong.
+
+Resolution: Corrected the coupon frequency field under Front Office >
+Static Data > Bond Instrument to "Semi-Annual," matching the official
+termsheet. Reversed the incorrect corporate action and reprocessed with
+the corrected frequency, generating the correct cash amount.
+
+Preventive note: Bond static data (coupon frequency, day count
+convention, first coupon date) should be verified against the official
+termsheet at instrument creation, since corporate action calculations
+are only as accurate as the static data feeding them.

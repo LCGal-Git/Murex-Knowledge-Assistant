@@ -1,0 +1,21 @@
+MUREX CONFIGURATION NOTE - POST-TRADE STP WORKFLOW STUCK IN PENDING
+
+Issue observed (2025-02-18): A batch of IRS (interest rate swap) trades
+booked by the Rates desk remained stuck in "Pending Validation" status
+overnight instead of progressing automatically through the STP
+(straight-through-processing) workflow to confirmation generation.
+
+Root cause: A recently added post-trade validation rule (checking for
+a mandatory clearing broker field on cleared trades) was misconfigured
+to apply to both cleared AND uncleared trades. Since uncleared IRS
+trades don't have a clearing broker, they failed the check and froze
+in the workflow.
+
+Resolution: Corrected the rule's scope under Post-Trade > Workflow
+Rules > Validation Rules to apply only to trades flagged as cleared.
+Manually released the stuck trades through the pending queue once the
+rule was fixed.
+
+Preventive note: Any new post-trade validation rule should be tested
+against both cleared and uncleared trade populations before deployment,
+since rules are easy to scope too broadly by default.

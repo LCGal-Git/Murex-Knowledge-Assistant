@@ -1,0 +1,19 @@
+MUREX CONFIGURATION NOTE - SETTLEMENT INSTRUCTION (SSI) MISMATCH
+
+Issue observed (2025-03-10): Settlement instructions generated for FX
+spot trades under entity BANK_MX_02 were routing payments to an
+incorrect nostro account for USD settlements.
+
+Root cause: Two SSI (Standard Settlement Instruction) records existed
+for the same counterparty - one legacy record and one updated record
+added after a correspondent bank change. The workflow was still
+referencing the legacy SSI due to an incorrect priority flag.
+
+Resolution: Deactivated the legacy SSI record under Back Office >
+Settlement > SSI Management, and set the updated record as the sole
+active instruction for USD. Reprocessed the three affected trades
+manually to regenerate correct settlement messages.
+
+Preventive note: When updating SSI records, always deactivate the
+old record rather than leaving both active with priority flags, since
+priority logic can be misread by downstream workflows.

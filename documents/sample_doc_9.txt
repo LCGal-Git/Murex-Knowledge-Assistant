@@ -1,0 +1,21 @@
+MUREX CONFIGURATION NOTE - SETTLEMENT NETTING NOT APPLYING CORRECTLY
+
+Issue observed (2025-06-02): FX trades with counterparty NORDIC_FX_AB
+that were expected to net into a single payment per currency per value
+date were instead generating separate, unnetted settlement instructions,
+increasing operational payment volume unnecessarily.
+
+Root cause: The netting agreement flag on the counterparty's static
+data record had been reset to "No Netting" during an unrelated static
+data cleanup exercise performed by the onboarding team, without
+awareness that a netting agreement was in place with this counterparty.
+
+Resolution: Re-enabled netting under Back Office > Settlement >
+Counterparty Netting Agreement, and confirmed with Legal that the
+signed netting agreement was still valid. Reprocessed the current
+day's trades so they netted correctly going forward.
+
+Preventive note: Static data cleanup exercises should cross-check
+netting agreement flags against a maintained list of legally signed
+netting agreements before making bulk changes, since this flag is easy
+to overwrite unintentionally.

@@ -1,0 +1,21 @@
+MUREX CONFIGURATION NOTE - MT CONFIRMATION MATCHING FAILURE
+
+Issue observed (2025-02-14): Outgoing SWIFT MT300 confirmations for FX
+spot trades booked under entity BANK_MX_01 were being generated but
+rejected by the counterparty's matching system.
+
+Root cause: The BIC code configured for the counterparty static data
+record had an outdated branch code suffix. The counterparty had migrated
+to a new correspondent banking relationship three months prior, but the
+static data update was never received from the client onboarding team.
+
+Resolution: Updated the counterparty static data record with the correct
+current BIC code under Front Office > Static Data > Counterparty >
+SWIFT Details. Reprocessed the affected confirmations manually through
+the MT Confirmation workflow, and all were accepted by the counterparty
+on resend.
+
+Preventive note: Counterparty static data (BIC codes, settlement
+instructions) should be reviewed periodically, especially for
+counterparties with known correspondent banking changes, rather than
+relying solely on onboarding-time data entry.
