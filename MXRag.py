@@ -4,35 +4,6 @@
 #Run installs
 #python -m pip install openai python-dotenv chromadb streamlit
 
-"""
-Day 5 - Streamlit interface.
-
-Everything about HOW retrieval and answering works is unchanged from
-Day 3/4 - same chunking, same embeddings, same Chroma vector search,
-same distance threshold. This file only changes HOW you interact with
-it: instead of typing in a terminal, you get a browser-based chat
-window.
-
-IMPORTANT STREAMLIT CONCEPT (read this before the code):
-Streamlit re-runs this entire script top-to-bottom every time you do
-ANYTHING on the page (send a message, click a button). If we weren't
-careful, that would mean rebuilding the vector database from scratch
-on every single question - slow, and it would eventually error out
-from trying to add duplicate entries.
-
-Two Streamlit tools fix this:
-1. @st.cache_resource - tells Streamlit "only actually run this
-   function once, then reuse the result on every future re-run"
-2. st.session_state - lets us remember the conversation history across
-   re-runs, so the chat doesn't reset itself after every message
-
-Setup:
-1. pip install streamlit chromadb openai python-dotenv
-2. Run with:  streamlit run day5_app.py
-   (NOT "python day5_app.py" - Streamlit apps need the "streamlit run"
-   command so it starts a local web server and opens your browser)
-"""
-
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -51,12 +22,11 @@ MAX_DISTANCE_THRESHOLD = 1.1
 
 if not DEEPSEEK_API_KEY:
     st.error("DEEPSEEK_API_KEY not found. Check your .env file.")
-    st.stop()  # halts the app cleanly instead of crashing with a traceback
+    st.stop()  # halts the app cleanly instead of crashing
 
 client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
 
 
-# ---- Same functions as Day 3/4, unchanged ----
 def load_documents(folder_path):
     documents = {}
     for filename in os.listdir(folder_path):
@@ -100,10 +70,10 @@ QUESTION:
     return response.choices[0].message.content
 
 
-# ---- NEW: cached database setup ----
+# ---- Cached database setup ----
 # @st.cache_resource means this function's code only actually executes
 # ONCE (the first time the app loads), no matter how many questions get
-# asked afterward. Streamlit remembers the result (the collection) and
+# asked afterward. Streamlit remembers the result and
 # just hands it back on every re-run instead of rebuilding it.
 @st.cache_resource
 def get_vector_collection():
@@ -145,7 +115,7 @@ def retrieve_relevant_chunks(question, collection, n_results=NUM_CHUNKS_TO_RETRI
     return filtered_chunks, filtered_sources
 
 
-# ==================== STREAMLIT UI STARTS HERE ====================
+# STREAMLIT UI STARTS HERE 
 
 st.title("Murex Knowledge Assistant")
 st.caption("Ask a question about the indexed project documentation.")
